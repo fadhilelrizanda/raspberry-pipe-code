@@ -20,6 +20,9 @@ jobs:
       - name: Pull latest changes
         run: git pull origin main
 
+      - name: check library
+      run: pip install -r requirements.txt
+
       # Additional steps for your build process can go here
       - name: Run a script
         run: |
