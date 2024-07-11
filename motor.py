@@ -35,6 +35,7 @@ def run_motor(time_sleep,direction):
         GPIO.output(IN4,GPIO.HIGH)
     time.sleep(time_sleep)
     print(f"done {time_sleep} seconds")
+    GPIO.cleanup()
 
 
 if __name__ == "__main__":
