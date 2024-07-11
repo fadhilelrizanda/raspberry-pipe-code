@@ -22,6 +22,7 @@ jobs:
 
       - name: check library
         run: |
+          ls
           source ./tutorial-venv/bin/activate 
           pip install -r requirements.txt
 
