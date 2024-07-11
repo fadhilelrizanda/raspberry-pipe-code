@@ -26,8 +26,6 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          source ./tutorial-venv/bin/activate 
-          pip install -r requirements.txt
 
       # Additional steps for your build process can go here
       - name: Run a script
