@@ -3,7 +3,7 @@ import time
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t','--time',type=int,required=True)
+parser.add_argument('-t','--time_sleep',type=int,required=True)
 parser.add_argument('-d','--direction',type=int,required=True)
 args= parser.parse_args()
 
@@ -19,7 +19,7 @@ GPIO.setup(IN2, GPIO.OUT)
 GPIO.setup(IN3, GPIO.OUT)
 GPIO.setup(IN4,GPIO.OUT)
 
-def run_motor(time,direction):
+def run_motor(time_sleep,direction):
     print("Running Motor")
     if direction == 1:
         print("forward")
@@ -33,9 +33,9 @@ def run_motor(time,direction):
         GPIO.output(IN2,GPIO.HIGH)
         GPIO.output(IN3,GPIO.LOW)
         GPIO.output(IN4,GPIO.HIGH)
-    time.sleep(time)
-    print(f"done {time} seconds")
+    time.sleep(time_sleep)
+    print(f"done {time_sleep} seconds")
 
 
 if __name__ == "__main__":
-    run_motor(args.time,args.direction)
+    run_motor(args.time_sleep,args.direction)
