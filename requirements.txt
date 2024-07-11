@@ -1,1 +1,3 @@
 argparse
+pigpio 
+python3-pigpio
