@@ -1,0 +1,9 @@
+IN1 = 17
+IN2 = 27
+IN3 = 22
+IN4 = 5
+
+PWM 1 = 13 (PWM1)
+PWM 2= 12 (PWM2)
+
+LAMP  = 6
