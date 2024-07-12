@@ -12,8 +12,8 @@ SERVO_PIN = [13,12]
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(SERVO_PIN_1, GPIO.OUT)
-GPIO.setup(SERVO_PIN_2, GPIO.OUT)
+GPIO.setup(SERVO_PIN[0], GPIO.OUT)
+GPIO.setup(SERVO_PIN[1], GPIO.OUT)
 
 def map_value(angle, in_min, in_max, out_min, out_max):
     # Map 'angle' from the input range [in_min, in_max] to the output range [out_min, out_max]
