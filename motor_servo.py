@@ -23,9 +23,11 @@ def run_servo(servo_num, degree):
     pulsewidth_micros = map_value(angle_degrees, 0, 180, -1, 1)
     # Create PWM instance
     if servo_num == 1:
+        print(pulsewidth_micros)
         servo1.value(pulsewidth_micros)
         print(f"Servo 1 running {pulsewidth_micros}")
     else:
+        print(pulsewidth_micros)
         servo2.value(pulsewidth_micros)
         print(f"Servo 2 running {pulsewidth_micros}")
 
