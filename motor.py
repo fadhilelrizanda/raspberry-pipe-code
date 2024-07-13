@@ -11,7 +11,7 @@ args= parser.parse_args()
 IN1 = 17
 IN2 = 27
 IN3 = 22
-IN4 = 5
+IN4 = 16
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(IN1, GPIO.OUT)
