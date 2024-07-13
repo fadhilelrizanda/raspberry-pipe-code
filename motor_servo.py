@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import argparse
+from gpiozero import Servo
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--degree', type=int, required=True)
@@ -8,12 +9,10 @@ parser.add_argument('-s', '--servo', type=int, required=True)
 args = parser.parse_args()
 
 # GPIO pin connected to the servo
-SERVO_PIN = [13,12]
 
-# Initialize GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(SERVO_PIN[0], GPIO.OUT)
-GPIO.setup(SERVO_PIN[1], GPIO.OUT)
+servo1 = Servo(12)
+servo2 = Servo(13)
+
 
 def map_value(angle, in_min, in_max, out_min, out_max):
     # Map 'angle' from the input range [in_min, in_max] to the output range [out_min, out_max]
@@ -21,23 +20,15 @@ def map_value(angle, in_min, in_max, out_min, out_max):
 
 def run_servo(servo_num, degree):
     angle_degrees = degree
-    pulsewidth_micros = map_value(angle_degrees, 0, 180, 1000, 2000)
+    pulsewidth_micros = map_value(angle_degrees, 0, 180, -1, 1)
     # Create PWM instance
-    servo = GPIO.PWM(SERVO_PIN[servo_num], 50)  # 50 Hz frequency
+    if servo_num == 1:
+        servo1.val(pulsewidth_micros)
+        print(f"Servo 1 running {pulsewidth_micros}")
+    else:
+        servo2.val(pulsewidth_micros)
+        print(f"Servo 2 running {pulsewidth_micros}")
 
-
-        # Start PWM
-    # servo.start(0)  # Start with 0% duty cycle
-        
-        # Move the servo to the desired degree position
-    servo.ChangeDutyCycle(5 + (pulsewidth_micros - 1000) / 10)  # Convert microseconds to duty cycle
-        
-    time.sleep(1)
-    
-    servo.stop()
-    GPIO.cleanup()
-    print("GPIO cleanup complete.")
-    print(f"Servo {servo_num} degree{degree} pwm{pulsewidth_micros}")
 
 if __name__ == "__main__":
     run_servo(args.servo,args.degree)
