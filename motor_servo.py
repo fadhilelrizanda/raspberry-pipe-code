@@ -14,13 +14,18 @@ servo1 = Servo(12)
 servo2 = Servo(13)
 
 
-def map_value(angle, in_min, in_max, out_min, out_max):
-    # Map 'angle' from the input range [in_min, in_max] to the output range [out_min, out_max]
-    return int((angle - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+def convert_to_range(value, min_value=0, max_value=180, new_min=-1, new_max=1):
+    # Check if the value is within the expected range
+    if value < min_value or value > max_value:
+        raise ValueError("Value out of range")
+    
+    # Perform the linear transformation
+    new_value = ((value - min_value) * (new_max - new_min) / (max_value - min_value)) + new_min
+    return new_value
 
 def run_servo(servo_num, degree):
     angle_degrees = degree
-    pulsewidth_micros = map_value(angle_degrees, 0, 180, -1, 1)
+    pulsewidth_micros = convert_to_range(angle_degrees)
     # Create PWM instance
     if servo_num == 1:
         print(pulsewidth_micros)
