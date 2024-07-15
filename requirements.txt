@@ -1,5 +1,5 @@
 argparse
 pigpio 
 opencv-contrib-python
-pickle
-socket
+# pickle
+# socket
