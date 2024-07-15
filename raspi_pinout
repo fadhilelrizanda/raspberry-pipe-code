@@ -1,7 +1,7 @@
-IN1 = 17
-IN2 = 27
-IN3 = 22
-IN4 = 5
+IN1 = 17 D1
+IN2 = 27 D2
+IN3 = 22 D3
+IN4 = 5 D4 
 
 PWM 1 = 13 (PWM1)
 PWM 2= 12 (PWM2)

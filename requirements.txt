@@ -1,2 +1,5 @@
 argparse
 pigpio 
+opencv-contrib-python
+pickle
+socket
