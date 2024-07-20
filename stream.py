@@ -6,12 +6,10 @@ import subprocess
 import numpy as np
 
 def capture_frame():
-    # Capture a single frame using libcamera
     command = ["libcamera-still", "-o", "-", "--width", "640", "--height", "480", "--nopreview"]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
     if process.returncode == 0:
-        # Convert the captured frame to a numpy array
         frame = np.frombuffer(out, dtype=np.uint8)
         frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
         return frame
@@ -40,7 +38,6 @@ def main():
                     print("Failed to capture frame")
                     break
 
-                # Encode frame to JPEG format
                 encoded, buffer = cv2.imencode('.jpg', frame)
                 if not encoded:
                     print("Failed to encode frame")
