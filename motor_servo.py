@@ -2,13 +2,14 @@ import argparse
 import RPi.GPIO as GPIO
 import time
 
+
 # Argument parsing
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--degree', type=int, required=True, help="Desired angle for the servo (0-180)")
 parser.add_argument('-s', '--servo', type=int, required=True, choices=[1, 2], help="Servo number (1 or 2)")
 args = parser.parse_args()
 
-# GPIO pins connected to the servos
+# GPIO pins connected to the servos pin 12 and 13
 Servo_pin1 = 12
 Servo_pin2 = 13
 GPIO.setmode(GPIO.BOARD)  # Use board pin numbering
