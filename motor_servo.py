@@ -27,12 +27,12 @@ def set_angle(angle, servo_num):
         print("Running Servo 1")
         pwm.ChangeDutyCycle(2 + (angle / 18))  # Calculate duty cycle for Servo 1
         time.sleep(1)  # Wait for the servo to reach the angle
-        pwm.ChangeDutyCycle(0)  # Stop sending PWM signal
+        # pwm.ChangeDutyCycle(0)  # Stop sending PWM signal
     elif servo_num == 2:
         print("Running Servo 2")
         pwm2.ChangeDutyCycle(2 + (angle / 18))  # Calculate duty cycle for Servo 2
         time.sleep(1)  # Wait for the servo to reach the angle
-        pwm2.ChangeDutyCycle(0)  # Stop sending PWM signal
+        # pwm2.ChangeDutyCycle(0)  # Stop sending PWM signal
     else:
         print("Invalid servo number. Please use 1 or 2.")
 
