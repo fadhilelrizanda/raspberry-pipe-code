@@ -1,57 +1,58 @@
 import socket
-import cv2
-import pickle
 import struct
-import subprocess
-import numpy as np
+import time
+import picamera2
+from picamera2.encoders import JpegEncoder
+from picamera2.outputs import FileOutput
+from io import BytesIO
 
-def capture_frame():
-    command = ["libcamera-still", "-o", "-", "--width", "640", "--height", "480", "--nopreview"]
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = process.communicate()
-    if process.returncode == 0:
-        frame = np.frombuffer(out, dtype=np.uint8)
-        frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
-        return frame
-    else:
-        print(f"Error capturing frame: {err}")
-        return None
+# Function to capture frames and send over the network
+def stream_camera(connection):
+    camera = picamera2.Picamera2()
+    camera_config = camera.create_still_configuration(main={"size": (640, 480)})
+    camera.configure(camera_config)
+    camera.start()
 
-def main():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host_ip = '192.168.200.2'  # Replace with your Raspberry Pi's IP address
-    port = 9999
+    stream = BytesIO()
 
-    socket_address = (host_ip, port)
-    server_socket.bind(socket_address)
-    server_socket.listen(5)
-    print(f"Listening on {socket_address}")
+    try:
+        while True:
+            stream.seek(0)
+            camera.capture_file(stream, format="jpeg")
+            image_data = stream.getvalue()
 
+            # Send the size of the image
+            connection.write(struct.pack('<L', len(image_data)))
+            connection.flush()
+
+            # Send the image data
+            connection.write(image_data)
+            connection.flush()
+
+            # Add a small delay to simulate video frame rate
+            time.sleep(0.1)
+    except Exception as e:
+        print(f"Error during streaming: {e}")
+    finally:
+        camera.stop()
+        connection.close()
+        print("Connection closed")
+
+# Set up the server
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server_socket.bind(('0.0.0.0', 8080))  # Changed port to 8080
+server_socket.listen(0)
+print("Server started, waiting for connections...")
+
+try:
+    # Accept a single connection
     while True:
-        client_socket, addr = server_socket.accept()
-        print(f"Connection from {addr}")
-
-        if client_socket:
-            while True:
-                frame = capture_frame()
-                if frame is None:
-                    print("Failed to capture frame")
-                    break
-
-                encoded, buffer = cv2.imencode('.jpg', frame)
-                if not encoded:
-                    print("Failed to encode frame")
-                    continue
-
-                a = pickle.dumps(buffer)
-                message = struct.pack("Q", len(a)) + a
-                try:
-                    client_socket.sendall(message)
-                except Exception as e:
-                    print(f"Error sending frame: {e}")
-                    break
-
-            client_socket.close()
-
-if __name__ == "__main__":
-    main()
+        connection = server_socket.accept()[0].makefile('wb')
+        print("Client connected")
+        stream_camera(connection)
+except KeyboardInterrupt:
+    print("Server shutting down")
+finally:
+    server_socket.close()
+    print("Server closed")
