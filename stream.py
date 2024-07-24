@@ -1,14 +1,12 @@
 import socket
 import struct
 import time
-import picamera2
-from picamera2.encoders import JpegEncoder
-from picamera2.outputs import FileOutput
+from picamera2 import Picamera2
 from io import BytesIO
 
 # Function to capture frames and send over the network
 def stream_camera(connection):
-    camera = picamera2.Picamera2()
+    camera = Picamera2()
     camera_config = camera.create_still_configuration(main={"size": (640, 480)})
     camera.configure(camera_config)
     camera.start()
@@ -39,20 +37,31 @@ def stream_camera(connection):
         print("Connection closed")
 
 # Set up the server
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server_socket.bind(('0.0.0.0', 8080))  # Changed port to 8080
-server_socket.listen(0)
-print("Server started, waiting for connections...")
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind(('0.0.0.0', 8080))  # Changed port to 8080
+    server_socket.listen(0)
+    server_socket.settimeout(10)  # Set a timeout for accepting connections
+    print("Server started, waiting for connections...")
 
-try:
-    # Accept a single connection
-    while True:
-        connection = server_socket.accept()[0].makefile('wb')
-        print("Client connected")
-        stream_camera(connection)
-except KeyboardInterrupt:
-    print("Server shutting down")
-finally:
-    server_socket.close()
-    print("Server closed")
+    try:
+        while True:
+            try:
+                connection = server_socket.accept()[0].makefile('wb')
+                print("Client connected")
+                stream_camera(connection)
+            except socket.timeout:
+                print("Server accept timeout, no connections received.")
+                continue
+            except Exception as e:
+                print(f"Error accepting connection: {e}")
+                break
+    except KeyboardInterrupt:
+        print("Server shutting down")
+    finally:
+        server_socket.close()
+        print("Server closed")
+
+if __name__ == "__main__":
+    start_server()
