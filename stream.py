@@ -28,7 +28,7 @@ def stream_camera(connection):
             connection.flush()
 
             # Add a small delay to simulate video frame rate
-            time.sleep(0.01)
+            time.sleep(0.05)
     except Exception as e:
         print(f"Error during streaming: {e}")
     finally:
