@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from pynput import keyboard
+import keyboard
 import socket
 import threading
 import time
@@ -38,19 +38,15 @@ def run_motor(direction):
         GPIO.output(IN3, GPIO.HIGH)
         GPIO.output(IN4, GPIO.LOW)
 
-def on_press(key):
-    try:
-        if key.char == 'w':
+def handle_key_event():
+    while True:
+        if keyboard.is_pressed('w'):
             run_motor(1)  # Move forward when 'w' is pressed
-        elif key.char == 's':
+        elif keyboard.is_pressed('s'):
             run_motor(0)  # Move backward when 's' is pressed
-    except AttributeError:
-        pass
-
-def on_release(key):
-    motor_reset()  # Stop the motor when any key is released
-    if key == keyboard.Key.esc:
-        return False  # Stop listener
+        else:
+            motor_reset()  # Stop the motor when no key is pressed
+        time.sleep(0.1)  # Sleep to prevent high CPU usage
 
 def handle_client_connection(client_socket):
     try:
@@ -78,9 +74,10 @@ def start_server():
 
 if __name__ == "__main__":
     try:
-        # Start the keyboard listener in a separate thread
-        listener = keyboard.Listener(on_press=on_press, on_release=on_release)
-        listener.start()
+        # Start the keyboard event handler thread
+        keyboard_thread = threading.Thread(target=handle_key_event)
+        keyboard_thread.daemon = True
+        keyboard_thread.start()
 
         # Start the server
         start_server()
