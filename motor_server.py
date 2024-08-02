@@ -18,9 +18,9 @@ GPIO.setup(IN4, GPIO.OUT)
 
 def motor_reset():
     GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
 
 def run_motor(time_sleep, direction):
     print("Running Motor")
