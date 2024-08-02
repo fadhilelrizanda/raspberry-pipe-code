@@ -16,6 +16,12 @@ GPIO.setup(IN2, GPIO.OUT)
 GPIO.setup(IN3, GPIO.OUT)
 GPIO.setup(IN4, GPIO.OUT)
 
+def motor_reset():
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+
 def run_motor(time_sleep, direction):
     print("Running Motor")
     if direction == 1:
@@ -41,8 +47,10 @@ def handle_client_connection(client_socket):
                 break
             if request == 'FORWARD':
                 run_motor(1, 1)
+                motor_reset()
             elif request == 'BACKWARD':
                 run_motor(1, 0)
+                motor_reset()
     finally:
         client_socket.close()
 
