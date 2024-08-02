@@ -36,7 +36,7 @@ def run_motor(time_sleep, direction):
         GPIO.output(IN2, GPIO.LOW)
         GPIO.output(IN3, GPIO.HIGH)
         GPIO.output(IN4, GPIO.LOW)
-    time.sleep(time_sleep)
+    # time.sleep(time_sleep)
     print(f"done {time_sleep} second(s)")
 
 def handle_client_connection(client_socket):
