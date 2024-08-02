@@ -9,6 +9,7 @@ IN2 = 27
 IN3 = 22
 IN4 = 16
 
+# Set GPIO mode
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(IN1, GPIO.OUT)
 GPIO.setup(IN2, GPIO.OUT)
@@ -31,7 +32,6 @@ def run_motor(time_sleep, direction):
         GPIO.output(IN4, GPIO.LOW)
     time.sleep(time_sleep)
     print(f"done {time_sleep} second(s)")
-    GPIO.cleanup()
 
 def handle_client_connection(client_socket):
     try:
