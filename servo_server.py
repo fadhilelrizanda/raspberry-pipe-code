@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import socket
 import threading
 
-# Setup GPIO
+# Setup GPIO test
 servo_pin_1 = 12
 servo_pin_2 = 13
 GPIO.setmode(GPIO.BCM)
