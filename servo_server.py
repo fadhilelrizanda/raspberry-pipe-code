@@ -3,8 +3,8 @@ import socket
 import threading
 
 # Setup GPIO
-servo_pin_1 = 17
-servo_pin_2 = 18
+servo_pin_1 = 12
+servo_pin_2 = 13
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin_1, GPIO.OUT)
 GPIO.setup(servo_pin_2, GPIO.OUT)
