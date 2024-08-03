@@ -34,6 +34,8 @@ def handle_client_connection(client_socket):
         while True:
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
+                pwm1.ChangeDutyCycle(0)
+                pwm2.ChangeDutyCycle(0)
                 break
             if request == 'LEFT':
                 angle1 = max(0, angle1 - 5)  # Decrease angle1
