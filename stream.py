@@ -3,15 +3,18 @@ import struct
 import time
 from picamera2 import Picamera2
 from io import BytesIO
+from picamera2.outputs import FileOutput
+from libcamera import Transform
 
 # Function to capture frames and send over the network
 def stream_camera(connection):
     camera = Picamera2()
-    camera_config = camera.create_still_configuration(main={"size": (640, 480)})
+    camera_config = camera.create_still_configuration(main={"size": (640, 480)}, transform=Transform(hflip=1, vflip=1))
     camera.configure(camera_config)
     camera.start()
 
     stream = BytesIO()
+    output = FileOutput(stream)
 
     try:
         while True:
