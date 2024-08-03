@@ -16,7 +16,7 @@ def stream_camera(connection):
     try:
         while True:
             stream.seek(0)
-            camera.capture_file(stream, format="jpeg", transform="hflip")
+            camera.capture_file(stream, format="jpeg")
             image_data = stream.getvalue()
 
             # Send the size of the image
