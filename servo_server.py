@@ -1,8 +1,9 @@
 import RPi.GPIO as GPIO
 import socket
 import threading
+import time
 
-# Setup GPIO test
+# Setup GPIO
 servo_pin_1 = 12
 servo_pin_2 = 13
 GPIO.setmode(GPIO.BCM)
@@ -19,14 +20,11 @@ pwm2.start(0)
 angle1 = 90  # Starting angle for servo 1
 angle2 = 90  # Starting angle for servo 2
 
-def set_servo_angle(servo, angle):
+def set_servo_angle(pwm, angle):
     duty = angle / 18 + 2
-    GPIO.output(servo, True)
-    if servo == servo_pin_1:
-        pwm1.ChangeDutyCycle(duty)
-    else:
-        pwm2.ChangeDutyCycle(duty)
-    GPIO.output(servo, False)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.02)  # Wait for the servo to reach the position
+    pwm.ChangeDutyCycle(0)  # Stop sending the signal
 
 def handle_client_connection(client_socket):
     global angle1, angle2
@@ -34,21 +32,19 @@ def handle_client_connection(client_socket):
         while True:
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
-                pwm1.ChangeDutyCycle(0)
-                pwm2.ChangeDutyCycle(0)
                 break
             if request == 'LEFT':
                 angle1 = max(0, angle1 - 5)  # Decrease angle1
-                set_servo_angle(servo_pin_1, angle1)
+                set_servo_angle(pwm1, angle1)
             elif request == 'RIGHT':
                 angle1 = min(180, angle1 + 5)  # Increase angle1
-                set_servo_angle(servo_pin_1, angle1)
+                set_servo_angle(pwm1, angle1)
             elif request == 'UP':
                 angle2 = max(0, angle2 - 5)  # Decrease angle2
-                set_servo_angle(servo_pin_2, angle2)
+                set_servo_angle(pwm2, angle2)
             elif request == 'DOWN':
                 angle2 = min(180, angle2 + 5)  # Increase angle2
-                set_servo_angle(servo_pin_2, angle2)
+                set_servo_angle(pwm2, angle2)
     finally:
         client_socket.close()
 

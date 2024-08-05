@@ -38,13 +38,13 @@ def run_motor(time_sleep, direction):
         GPIO.output(IN4, GPIO.LOW)
     time.sleep(time_sleep)
     print(f"done {time_sleep} second(s)")
+    motor_reset()
 
 def handle_client_connection(client_socket):
     try:
         while True:
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
-                motor_reset()
                 break
             if request == 'FORWARD':
                 run_motor(1, 1)
