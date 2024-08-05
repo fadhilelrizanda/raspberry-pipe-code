@@ -9,7 +9,10 @@ from libcamera import Transform
 # Function to capture frames and send over the network
 def stream_camera(connection):
     camera = Picamera2()
-    camera_config = camera.create_still_configuration(main={"size": (640, 480)}, transform=Transform(hflip=1, vflip=1))
+    camera_config = camera.create_still_configuration(
+        main={"size": (640, 480), "crop": (0, 0, 1, 1)},  # Change the crop values to adjust zoom
+        transform=Transform(hflip=1, vflip=1)
+    )
     camera.configure(camera_config)
     camera.start()
 
