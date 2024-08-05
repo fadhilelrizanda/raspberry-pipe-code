@@ -9,9 +9,9 @@ from libcamera import Transform
 # Function to capture frames and send over the network
 def stream_camera(connection):
     camera = Picamera2()
+    # Adjust the camera configuration to use the full sensor resolution
     camera_config = camera.create_still_configuration(
-        main={"size": (640, 480)},
-        lores={"size": (320, 240), "format": "YUV420"},
+        main={"size": camera.sensor_resolution},  # Use the full sensor resolution
         transform=Transform(hflip=1, vflip=1)
     )
     camera.configure(camera_config)
