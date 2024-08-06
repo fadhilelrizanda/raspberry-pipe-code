@@ -20,9 +20,6 @@ pwm2.start(0)
 angle1 = 90  # Starting angle for servo 1
 angle2 = 90  # Starting angle for servo 2
 
-# Debounce settings
-debounce_time = 0.2  # 200ms debounce time
-
 def set_servo_angle(pwm, angle):
     duty = angle / 18 + 2
     pwm.ChangeDutyCycle(duty)
@@ -32,20 +29,11 @@ def set_servo_angle(pwm, angle):
 
 def handle_client_connection(client_socket):
     global angle1, angle2
-    last_command_time = time.time()
-    
     try:
         while True:
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
                 break
-            
-            current_time = time.time()
-            if current_time - last_command_time < debounce_time:
-                continue  # Skip this command if it's within the debounce period
-            
-            last_command_time = current_time  # Update last command time
-            
             if request == 'LEFT':
                 angle1 = max(0, angle1 - 5)  # Decrease angle1
                 set_servo_angle(pwm1, angle1)
