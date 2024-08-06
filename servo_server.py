@@ -2,42 +2,13 @@ import pigpio
 import socket
 import threading
 import time
-import subprocess
-
-# Check if pigpiod is running
-def check_pigpiod():
-    try:
-        subprocess.run(['pgrep', 'pigpiod'], check=True, stdout=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-# Start the pigpiod daemon
-def start_pigpiod():
-    try:
-        subprocess.run(['sudo', 'pigpiod'], check=True)
-        print("pigpiod started successfully")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to start pigpiod: {e}")
-
-# Stop the pigpiod daemon
-def stop_pigpiod():
-    try:
-        subprocess.run(['sudo', 'pkill', 'pigpiod'], check=True)
-        print("pigpiod stopped successfully")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to stop pigpiod: {e}")
 
 # Setup GPIO using pigpio
 servo_pin_1 = 12
 servo_pin_2 = 13
 
-# Ensure pigpiod is running
-if not check_pigpiod():
-    start_pigpiod()
-    time.sleep(5)  # Wait for pigpiod to initialize
-
-pi = pigpio.pi()  # Connect to local pigpio daemon
+# Connect to local pigpio daemon
+pi = pigpio.pi()  # Connect to pigpio daemon
 
 # Wait for the pigpio connection to be established
 timeout = 10  # seconds
@@ -47,7 +18,6 @@ while not pi.connected and (time.time() - start_time) < timeout:
 
 if not pi.connected:
     print("Failed to connect to pigpio daemon")
-    stop_pigpiod()
     exit(1)
 
 print("Connected to pigpio daemon")
@@ -120,8 +90,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        # Stop pigpiod and clean up
-        stop_pigpiod()
+        # Cleanup
         pi.set_servo_pulsewidth(servo_pin_1, 0)
         pi.set_servo_pulsewidth(servo_pin_2, 0)
         pi.stop()
