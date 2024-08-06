@@ -34,7 +34,7 @@ angle2 = 90  # Starting angle for servo 2
 debounce_delay = 0.2  # Adjust this value as needed
 
 def set_servo_angle(pin, angle):
-    pulsewidth = angle / 18 * 1000 + 500  # Convert angle to pulsewidth
+    pulsewidth = max(500, min(2500, angle / 18 * 1000 + 500))  # Convert angle to pulsewidth within valid range
     pi.set_servo_pulsewidth(pin, pulsewidth)
     time.sleep(0.02)  # Wait for the servo to reach the position
     time.sleep(3)  # hold
