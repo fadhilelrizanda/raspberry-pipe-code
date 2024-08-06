@@ -27,7 +27,7 @@ def set_servo_angle(pwm, angle):
     duty = angle / 18 + 2
     pwm.ChangeDutyCycle(duty)
     time.sleep(0.02)  # Wait for the servo to reach the position
-    time.sleep(3) # hold
+    time.sleep(3)  # hold
     pwm.ChangeDutyCycle(0)  # Stop sending the signal
 
 def handle_client_connection(client_socket):
@@ -53,6 +53,8 @@ def handle_client_connection(client_socket):
                     angle2 = min(180, angle2 + 5)  # Increase angle2
                     set_servo_angle(pwm2, angle2)
                 last_time = current_time  # Update the last processed time
+    except Exception as e:
+        print(f"Error: {e}")
     finally:
         client_socket.close()
 
