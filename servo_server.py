@@ -20,27 +20,19 @@ pwm2.start(0)
 angle1 = 90  # Starting angle for servo 1
 angle2 = 90  # Starting angle for servo 2
 
-def smooth_servo_angle(pwm, current_angle, target_angle, step=1, delay=0.02):
-    if current_angle < target_angle:
-        for angle in range(current_angle, target_angle + 1, step):
-            duty = angle / 18 + 2
-            pwm.ChangeDutyCycle(duty)
-            time.sleep(delay)
-    elif current_angle > target_angle:
-        for angle in range(current_angle, target_angle - 1, -step):
-            duty = angle / 18 + 2
-            pwm.ChangeDutyCycle(duty)
-            time.sleep(delay)
-    # Hold the final position
-    final_duty = target_angle / 18 + 2
-    pwm.ChangeDutyCycle(final_duty)
+# Debounce settings
+debounce_time = 0.2  # 200ms debounce time
+
+def set_servo_angle(pwm, angle):
+    duty = angle / 18 + 2
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.02)  # Wait for the servo to reach the position
     time.sleep(2)
     pwm.ChangeDutyCycle(0)  # Stop sending the signal
 
 def handle_client_connection(client_socket):
     global angle1, angle2
     last_command_time = time.time()
-    debounce_time = 0.2  # 200ms debounce time
     
     try:
         while True:
@@ -55,21 +47,17 @@ def handle_client_connection(client_socket):
             last_command_time = current_time  # Update last command time
             
             if request == 'LEFT':
-                new_angle1 = max(0, angle1 - 5)  # Decrease angle1
-                smooth_servo_angle(pwm1, angle1, new_angle1)
-                angle1 = new_angle1
+                angle1 = max(0, angle1 - 5)  # Decrease angle1
+                set_servo_angle(pwm1, angle1)
             elif request == 'RIGHT':
-                new_angle1 = min(180, angle1 + 5)  # Increase angle1
-                smooth_servo_angle(pwm1, angle1, new_angle1)
-                angle1 = new_angle1
+                angle1 = min(180, angle1 + 5)  # Increase angle1
+                set_servo_angle(pwm1, angle1)
             elif request == 'UP':
-                new_angle2 = max(0, angle2 - 5)  # Decrease angle2
-                smooth_servo_angle(pwm2, angle2, new_angle2)
-                angle2 = new_angle2
+                angle2 = max(0, angle2 - 5)  # Decrease angle2
+                set_servo_angle(pwm2, angle2)
             elif request == 'DOWN':
-                new_angle2 = min(180, angle2 + 5)  # Increase angle2
-                smooth_servo_angle(pwm2, angle2, new_angle2)
-                angle2 = new_angle2
+                angle2 = min(180, angle2 + 5)  # Increase angle2
+                set_servo_angle(pwm2, angle2)
     finally:
         client_socket.close()
 
