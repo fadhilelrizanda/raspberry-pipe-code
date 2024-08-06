@@ -20,7 +20,7 @@ pwm2.start(0)
 angle1 = 90  # Starting angle for servo 1
 angle2 = 90  # Starting angle for servo 2
 
-def set_servo_angle(pwm, current_angle, target_angle, step=1, delay=0.02):
+def set_servo_angle(pwm, current_angle, target_angle, step=1, delay=0.02, hold_time=2):
     if current_angle < target_angle:
         for angle in range(current_angle, target_angle + 1, step):
             duty = angle / 18 + 2
@@ -31,9 +31,11 @@ def set_servo_angle(pwm, current_angle, target_angle, step=1, delay=0.02):
             duty = angle / 18 + 2
             pwm.ChangeDutyCycle(duty)
             time.sleep(delay)
-    # Hold position
+    # Hold position for specified time
     hold_duty = target_angle / 18 + 2
     pwm.ChangeDutyCycle(hold_duty)
+    time.sleep(hold_time)
+    pwm.ChangeDutyCycle(0)  # Stop sending the signal after hold_time
 
 def handle_client_connection(client_socket):
     global angle1, angle2
