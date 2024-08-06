@@ -20,32 +20,38 @@ pwm2.start(0)
 angle1 = 90  # Starting angle for servo 1
 angle2 = 90  # Starting angle for servo 2
 
+# Debounce delay in seconds
+debounce_delay = 0.2  # Adjust this value as needed
+
 def set_servo_angle(pwm, angle):
     duty = angle / 18 + 2
     pwm.ChangeDutyCycle(duty)
     time.sleep(0.02)  # Wait for the servo to reach the position
-    time.sleep(2)
     pwm.ChangeDutyCycle(0)  # Stop sending the signal
 
 def handle_client_connection(client_socket):
     global angle1, angle2
+    last_time = 0  # Initialize the last processed time
     try:
         while True:
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
                 break
-            if request == 'LEFT':
-                angle1 = max(0, angle1 - 5)  # Decrease angle1
-                set_servo_angle(pwm1, angle1)
-            elif request == 'RIGHT':
-                angle1 = min(180, angle1 + 5)  # Increase angle1
-                set_servo_angle(pwm1, angle1)
-            elif request == 'UP':
-                angle2 = max(0, angle2 - 5)  # Decrease angle2
-                set_servo_angle(pwm2, angle2)
-            elif request == 'DOWN':
-                angle2 = min(180, angle2 + 5)  # Increase angle2
-                set_servo_angle(pwm2, angle2)
+            current_time = time.time()
+            if current_time - last_time >= debounce_delay:
+                if request == 'LEFT':
+                    angle1 = max(0, angle1 - 5)  # Decrease angle1
+                    set_servo_angle(pwm1, angle1)
+                elif request == 'RIGHT':
+                    angle1 = min(180, angle1 + 5)  # Increase angle1
+                    set_servo_angle(pwm1, angle1)
+                elif request == 'UP':
+                    angle2 = max(0, angle2 - 5)  # Decrease angle2
+                    set_servo_angle(pwm2, angle2)
+                elif request == 'DOWN':
+                    angle2 = min(180, angle2 + 5)  # Increase angle2
+                    set_servo_angle(pwm2, angle2)
+                last_time = current_time  # Update the last processed time
     finally:
         client_socket.close()
 
