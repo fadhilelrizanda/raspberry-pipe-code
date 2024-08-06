@@ -4,6 +4,14 @@ import threading
 import time
 import subprocess
 
+# Check if pigpiod is running
+def check_pigpiod():
+    try:
+        subprocess.run(['pgrep', 'pigpiod'], check=True, stdout=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
 # Start the pigpiod daemon
 def start_pigpiod():
     try:
@@ -24,13 +32,25 @@ def stop_pigpiod():
 servo_pin_1 = 12
 servo_pin_2 = 13
 
-# Start pigpiod before initializing pigpio
-start_pigpiod()
+# Ensure pigpiod is running
+if not check_pigpiod():
+    start_pigpiod()
+    time.sleep(5)  # Wait for pigpiod to initialize
 
 pi = pigpio.pi()  # Connect to local pigpio daemon
 
+# Wait for the pigpio connection to be established
+timeout = 10  # seconds
+start_time = time.time()
+while not pi.connected and (time.time() - start_time) < timeout:
+    time.sleep(1)  # Wait a bit and try again
+
 if not pi.connected:
-    raise RuntimeError("Failed to connect to pigpio daemon")
+    print("Failed to connect to pigpio daemon")
+    stop_pigpiod()
+    exit(1)
+
+print("Connected to pigpio daemon")
 
 # Initialize PWM
 pi.set_mode(servo_pin_1, pigpio.OUTPUT)
@@ -74,19 +94,25 @@ def handle_client_connection(client_socket):
                     set_servo_angle(servo_pin_2, angle2)
                 last_time = current_time  # Update the last processed time
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in client connection: {e}")
     finally:
         client_socket.close()
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', 5000))
-    server.listen(5)
-    print("Server started on port 5000")
-    while True:
-        client_sock, addr = server.accept()
-        client_handler = threading.Thread(target=handle_client_connection, args=(client_sock,))
-        client_handler.start()
+    try:
+        server.bind(('0.0.0.0', 5000))
+        server.listen(5)
+        print("Server started on port 5000")
+        while True:
+            client_sock, addr = server.accept()
+            print(f"Connection from {addr}")
+            client_handler = threading.Thread(target=handle_client_connection, args=(client_sock,))
+            client_handler.start()
+    except Exception as e:
+        print(f"Error in starting server: {e}")
+    finally:
+        server.close()
 
 if __name__ == "__main__":
     try:
@@ -99,3 +125,4 @@ if __name__ == "__main__":
         pi.set_servo_pulsewidth(servo_pin_1, 0)
         pi.set_servo_pulsewidth(servo_pin_2, 0)
         pi.stop()
+        print("Cleanup done")
