@@ -70,17 +70,17 @@ def handle_client_connection(client_socket):
             current_time = time.time()
             if current_time - last_time >= debounce_delay:
                 if request == 'RIGHT' and angle1 > 5:
-                    smooth_transition(servo_pin_1, angle1, angle1 - 1)
-                    angle1 -= 1  # Decrease angle1
+                    smooth_transition(servo_pin_1, angle1, angle1 - 0.5)
+                    angle1 -= 0.5  # Decrease angle1
                 elif request == 'LEFT' and angle1 < 35:
-                    smooth_transition(servo_pin_1, angle1, angle1 + 1)
-                    angle1 += 1  # Increase angle1
+                    smooth_transition(servo_pin_1, angle1, angle1 + 0.5)
+                    angle1 += 0.5  # Increase angle1
                 elif request == 'UP' and angle2 > 0:
-                    smooth_transition(servo_pin_2, angle2, angle2 - 1)
-                    angle2 -= 1  # Decrease angle2
-                elif request == 'DOWN' and angle2 < 180:
-                    smooth_transition(servo_pin_2, angle2, angle2 + 1)
-                    angle2 += 1  # Increase angle2
+                    smooth_transition(servo_pin_2, angle2, angle2 - 0.5)
+                    angle2 -= 0.5  # Decrease angle2
+                elif request == 'DOWN' and angle2 < 25:
+                    smooth_transition(servo_pin_2, angle2, angle2 + 0.5)
+                    angle2 += 0.5  # Increase angle2
                 last_time = current_time  # Update the last processed time
                 print(f"Angle1: {angle1}, Angle2: {angle2}")
     except Exception as e:
