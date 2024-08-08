@@ -64,7 +64,8 @@ def handle_client_connection(client_socket):
                     angle2 = min(180, angle2 + 5)  # Increase angle2
                     set_servo_angle(servo_pin_2, angle2)
                 last_time = current_time  # Update the last processed time
-                print(angle)
+                print(angle1)
+                print(angle2)
     except Exception as e:
         print(f"Error in client connection: {e}")
     finally:
