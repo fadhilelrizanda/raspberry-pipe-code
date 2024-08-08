@@ -6,7 +6,7 @@ import time
 # Constants for pulse width and debounce
 MIN_PULSE_WIDTH = 500  # Microseconds
 MAX_PULSE_WIDTH = 2500  # Microseconds
-debounce_delay = 0.2  # Debounce delay in seconds
+debounce_delay = 0.6  # Debounce delay in seconds
 
 # Setup GPIO using pigpio
 servo_pin_1 = 12
