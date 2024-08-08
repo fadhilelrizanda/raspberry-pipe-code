@@ -3,6 +3,11 @@ import socket
 import threading
 import time
 
+# Constants for pulse width and debounce
+MIN_PULSE_WIDTH = 500  # Microseconds
+MAX_PULSE_WIDTH = 2500  # Microseconds
+debounce_delay = 0.2  # Debounce delay in seconds
+
 # Setup GPIO using pigpio
 servo_pin_1 = 12
 servo_pin_2 = 13
@@ -22,23 +27,36 @@ if not pi.connected:
 
 print("Connected to pigpio daemon")
 
-# Initialize PWM
+# Initialize PWM and set frequency
 pi.set_mode(servo_pin_1, pigpio.OUTPUT)
 pi.set_mode(servo_pin_2, pigpio.OUTPUT)
+pi.set_PWM_frequency(servo_pin_1, 50)  # 50 Hz for servo control
+pi.set_PWM_frequency(servo_pin_2, 50)  # 50 Hz for servo control
 
-# Current angles
-angle1 = 90  # Starting angle for servo 1
-angle2 = 90  # Starting angle for servo 2
+# Current angles, setting initial positions to 90 degrees
+angle1 = 19  # Starting angle for servo 1
+angle2 = 17  # Starting angle for servo 2
 
-# Debounce delay in seconds
-debounce_delay = 0.2  # Adjust this value as needed
-
+# Move servos to 90 degrees on startup
 def set_servo_angle(pin, angle):
-    pulsewidth = max(500, min(2500, angle / 18 * 1000 + 500))  # Convert angle to pulsewidth within valid range
+    pulsewidth = max(MIN_PULSE_WIDTH, min(MAX_PULSE_WIDTH, angle / 18 * 1000 + 500))
     pi.set_servo_pulsewidth(pin, pulsewidth)
     time.sleep(0.02)  # Wait for the servo to reach the position
-    # time.sleep(3)  # hold
-    # pi.set_servo_pulsewidth(pin, 0)  # Stop sending the signal
+
+# Set both servos to 90 degrees (normal condition) at startup
+set_servo_angle(servo_pin_1, angle1)
+set_servo_angle(servo_pin_2, angle2)
+print("Servos initialized to 90 degrees")
+
+def smooth_transition(pin, start_angle, end_angle, step=1, delay=0.01):
+    if start_angle < end_angle:
+        for angle in range(start_angle, end_angle + step, step):
+            set_servo_angle(pin, angle)
+            time.sleep(delay)
+    else:
+        for angle in range(start_angle, end_angle - step, -step):
+            set_servo_angle(pin, angle)
+            time.sleep(delay)
 
 def handle_client_connection(client_socket):
     global angle1, angle2
@@ -51,21 +69,20 @@ def handle_client_connection(client_socket):
             print(f"Received request: {request}")
             current_time = time.time()
             if current_time - last_time >= debounce_delay:
-                if request == 'RIGHT':
-                    angle1 = max(5, angle1 - 1)  # Decrease angle1
-                    set_servo_angle(servo_pin_1, angle1)
-                elif request == 'LEFT':
-                    angle1 = min(35, angle1 + 1)  # Increase angle1
-                    set_servo_angle(servo_pin_1, angle1)
-                elif request == 'UP':
-                    angle2 = max(0, angle2 - 1)  # Decrease angle2
-                    set_servo_angle(servo_pin_2, angle2)
-                elif request == 'DOWN':
-                    angle2 = min(22, angle2 + 1)  # Increase angle2
-                    set_servo_angle(servo_pin_2, angle2)
+                if request == 'RIGHT' and angle1 > 5:
+                    smooth_transition(servo_pin_1, angle1, angle1 - 1)
+                    angle1 -= 1  # Decrease angle1
+                elif request == 'LEFT' and angle1 < 35:
+                    smooth_transition(servo_pin_1, angle1, angle1 + 1)
+                    angle1 += 1  # Increase angle1
+                elif request == 'UP' and angle2 > 0:
+                    smooth_transition(servo_pin_2, angle2, angle2 - 1)
+                    angle2 -= 1  # Decrease angle2
+                elif request == 'DOWN' and angle2 < 180:
+                    smooth_transition(servo_pin_2, angle2, angle2 + 1)
+                    angle2 += 1  # Increase angle2
                 last_time = current_time  # Update the last processed time
-                print(angle1)
-                print(angle2)
+                print(f"Angle1: {angle1}, Angle2: {angle2}")
     except Exception as e:
         print(f"Error in client connection: {e}")
     finally:
