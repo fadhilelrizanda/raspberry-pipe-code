@@ -51,17 +51,17 @@ def handle_client_connection(client_socket):
             print(f"Received request: {request}")
             current_time = time.time()
             if current_time - last_time >= debounce_delay:
-                if request == 'LEFT':
-                    angle1 = max(0, angle1 - 5)  # Decrease angle1
+                if request == 'RIGHT':
+                    angle1 = max(5, angle1 - 2)  # Decrease angle1
                     set_servo_angle(servo_pin_1, angle1)
-                elif request == 'RIGHT':
-                    angle1 = min(180, angle1 + 5)  # Increase angle1
+                elif request == 'LEFT':
+                    angle1 = min(35, angle1 + 2)  # Increase angle1
                     set_servo_angle(servo_pin_1, angle1)
                 elif request == 'UP':
-                    angle2 = max(0, angle2 - 5)  # Decrease angle2
+                    angle2 = max(0, angle2 - 2)  # Decrease angle2
                     set_servo_angle(servo_pin_2, angle2)
                 elif request == 'DOWN':
-                    angle2 = min(180, angle2 + 5)  # Increase angle2
+                    angle2 = min(180, angle2 + 2)  # Increase angle2
                     set_servo_angle(servo_pin_2, angle2)
                 last_time = current_time  # Update the last processed time
                 print(angle1)
