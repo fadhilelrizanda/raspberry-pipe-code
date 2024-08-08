@@ -6,7 +6,7 @@ import time
 # Constants for pulse width and debounce
 MIN_PULSE_WIDTH = 500  # Microseconds
 MAX_PULSE_WIDTH = 2500  # Microseconds
-debounce_delay = 0.6  # Debounce delay in seconds
+debounce_delay = 0.8  # Debounce delay in seconds
 
 # Setup GPIO using pigpio
 servo_pin_1 = 12
@@ -48,7 +48,7 @@ set_servo_angle(servo_pin_1, angle1)
 set_servo_angle(servo_pin_2, angle2)
 print("Servos initialized to 90 degrees")
 
-def smooth_transition(pin, start_angle, end_angle, step=1, delay=0.01):
+def smooth_transition(pin, start_angle, end_angle, step=1, delay=0.08):
     if start_angle < end_angle:
         for angle in range(start_angle, end_angle + step, step):
             set_servo_angle(pin, angle)
