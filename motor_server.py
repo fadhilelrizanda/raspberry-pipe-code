@@ -46,10 +46,10 @@ def handle_client_connection(client_socket):
             request = client_socket.recv(1024).decode('utf-8')
             if not request:
                 break
-            if request == 'FORWARD':
+            if request == 'BACKWARD':
                 run_motor(1, 1)
                 
-            elif request == 'BACKWARD':
+            elif request == 'FORWARD':FORWARD
                 run_motor(1, 0)
 
     finally:
