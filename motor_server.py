@@ -30,6 +30,18 @@ def run_motor(time_sleep, direction):
         GPIO.output(IN2, GPIO.HIGH)
         GPIO.output(IN3, GPIO.LOW)
         GPIO.output(IN4, GPIO.HIGH)
+    elif direction == 2:
+        print("Left")
+        GPIO.output(IN1, GPIO.LOW)
+        GPIO.output(IN2, GPIO.HIGH)
+        GPIO.output(IN3, GPIO.LOW)
+        GPIO.output(IN4, GPIO.LOW)
+    elif direction == 3:
+        print("Right")
+        GPIO.output(IN1, GPIO.LOW)
+        GPIO.output(IN2, GPIO.LOW)
+        GPIO.output(IN3, GPIO.LOW)
+        GPIO.output(IN4, GPIO.HIGH)
     else:
         print("backward")
         GPIO.output(IN1, GPIO.HIGH)
@@ -51,6 +63,10 @@ def handle_client_connection(client_socket):
                 
             elif request == 'FORWARD':
                 run_motor(1, 0)
+            elif request =="A":
+                run_motor(1, 2)
+            elif request =="D":
+                run_motor(1, 3)
     finally:
         client_socket.close()
 
