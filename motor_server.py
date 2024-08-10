@@ -32,16 +32,16 @@ def run_motor(time_sleep, direction):
         GPIO.output(IN4, GPIO.HIGH)
     elif direction == 2:
         print("Left")
-        GPIO.output(IN1, GPIO.LOW)
-        GPIO.output(IN2, GPIO.HIGH)
+        GPIO.output(IN1, GPIO.HIGH)
+        GPIO.output(IN2, GPIO.LOW)
         GPIO.output(IN3, GPIO.LOW)
         GPIO.output(IN4, GPIO.LOW)
     elif direction == 3:
         print("Right")
         GPIO.output(IN1, GPIO.LOW)
         GPIO.output(IN2, GPIO.LOW)
-        GPIO.output(IN3, GPIO.LOW)
-        GPIO.output(IN4, GPIO.HIGH)
+        GPIO.output(IN3, GPIO.HIGH)
+        GPIO.output(IN4, GPIO.LOW)
     else:
         print("backward")
         GPIO.output(IN1, GPIO.HIGH)
