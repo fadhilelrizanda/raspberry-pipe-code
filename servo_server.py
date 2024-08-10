@@ -8,6 +8,12 @@ MIN_PULSE_WIDTH = 500  # Microseconds
 MAX_PULSE_WIDTH = 2500  # Microseconds
 debounce_delay = 0.6  # Debounce delay in seconds
 
+# Angle limits
+MIN_ANGLE_1 = 5
+MAX_ANGLE_1 = 35
+MIN_ANGLE_2 = 0
+MAX_ANGLE_2 = 25
+
 # Setup GPIO using pigpio
 servo_pin_1 = 12
 servo_pin_2 = 13
@@ -34,21 +40,24 @@ pi.set_PWM_frequency(servo_pin_1, 50)  # 50 Hz for servo control
 pi.set_PWM_frequency(servo_pin_2, 50)  # 50 Hz for servo control
 
 # Current angles, setting initial positions to 90 degrees
-angle1 = 19  # Starting angle for servo 1
-angle2 = 17  # Starting angle for servo 2
+angle1 = (MIN_ANGLE_1 + MAX_ANGLE_1) // 2  # Starting angle for servo 1
+angle2 = (MIN_ANGLE_2 + MAX_ANGLE_2) // 2  # Starting angle for servo 2
 
-# Move servos to 90 degrees on startup
+# Move servos to specified angles
 def set_servo_angle(pin, angle):
     pulsewidth = max(MIN_PULSE_WIDTH, min(MAX_PULSE_WIDTH, angle / 18 * 1000 + 500))
     pi.set_servo_pulsewidth(pin, pulsewidth)
     time.sleep(0.02)  # Wait for the servo to reach the position
 
-# Set both servos to 90 degrees (normal condition) at startup
+# Set both servos to their starting angles at startup
 set_servo_angle(servo_pin_1, angle1)
 set_servo_angle(servo_pin_2, angle2)
-print("Servos initialized to 90 degrees")
+print(f"Servos initialized to angles: {angle1} (Servo 1), {angle2} (Servo 2)")
 
 def smooth_transition(pin, start_angle, end_angle, step=1, delay=0.01):
+    start_angle = max(min(start_angle, MAX_ANGLE_1 if pin == servo_pin_1 else MAX_ANGLE_2), MIN_ANGLE_1 if pin == servo_pin_1 else MIN_ANGLE_2)
+    end_angle = max(min(end_angle, MAX_ANGLE_1 if pin == servo_pin_1 else MAX_ANGLE_2), MIN_ANGLE_1 if pin == servo_pin_1 else MIN_ANGLE_2)
+
     if start_angle < end_angle:
         for angle in range(start_angle, end_angle + step, step):
             set_servo_angle(pin, angle)
@@ -69,16 +78,16 @@ def handle_client_connection(client_socket):
             print(f"Received request: {request}")
             current_time = time.time()
             if current_time - last_time >= debounce_delay:
-                if request == 'RIGHT' and angle1 > 5:
+                if request == 'RIGHT' and angle1 > MIN_ANGLE_1:
                     smooth_transition(servo_pin_1, angle1, angle1 - 1)
                     angle1 -= 1  # Decrease angle1
-                elif request == 'LEFT' and angle1 < 35:
+                elif request == 'LEFT' and angle1 < MAX_ANGLE_1:
                     smooth_transition(servo_pin_1, angle1, angle1 + 1)
                     angle1 += 1  # Increase angle1
-                elif request == 'UP' and angle2 > 0:
+                elif request == 'UP' and angle2 > MIN_ANGLE_2:
                     smooth_transition(servo_pin_2, angle2, angle2 - 1)
                     angle2 -= 1  # Decrease angle2
-                elif request == 'DOWN' and angle2 < 25:
+                elif request == 'DOWN' and angle2 < MAX_ANGLE_2:
                     smooth_transition(servo_pin_2, angle2, angle2 + 1)
                     angle2 += 1  # Increase angle2
                 last_time = current_time  # Update the last processed time
