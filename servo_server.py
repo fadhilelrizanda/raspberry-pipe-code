@@ -2,8 +2,6 @@ import pigpio
 import socket
 import threading
 import time
-import signal
-import sys
 
 # Constants for pulse width and debounce
 MIN_PULSE_WIDTH = 500  # Microseconds
@@ -31,7 +29,7 @@ while not pi.connected and (time.time() - start_time) < timeout:
 
 if not pi.connected:
     print("Failed to connect to pigpio daemon")
-    sys.exit(1)
+    exit(1)
 
 print("Connected to pigpio daemon")
 
@@ -99,15 +97,13 @@ def handle_client_connection(client_socket):
     finally:
         client_socket.close()
 
-shutdown_event = threading.Event()
-
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         server.bind(('0.0.0.0', 5000))
         server.listen(5)
         print("Server started on port 5000")
-        while not shutdown_event.is_set():
+        while True:
             client_sock, addr = server.accept()
             print(f"Connection from {addr}")
             client_handler = threading.Thread(target=handle_client_connection, args=(client_sock,))
@@ -117,26 +113,14 @@ def start_server():
     finally:
         server.close()
 
-def signal_handler(sig, frame):
-    print("Signal received, shutting down...")
-    shutdown_event.set()
-
-    # Cleanup
-    pi.set_servo_pulsewidth(servo_pin_1, 0)
-    pi.set_servo_pulsewidth(servo_pin_2, 0)
-    pi.stop()
-    print("Cleanup done")
-    sys.exit(0)
-
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     try:
         start_server()
     except KeyboardInterrupt:
         pass
     finally:
-        # Cleanup in case the signal handler didn't catch it
-        if not shutdown_event.is_set():
-            signal_handler(None, None)
+        # Cleanup
+        pi.set_servo_pulsewidth(servo_pin_1, 0)
+        pi.set_servo_pulsewidth(servo_pin_2, 0)
+        pi.stop()
+        print("Cleanup done")
