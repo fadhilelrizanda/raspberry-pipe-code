@@ -49,9 +49,8 @@ def handle_client_connection(client_socket):
             if request == 'BACKWARD':
                 run_motor(1, 1)
                 
-            elif request == 'FORWARD':FORWARD
+            elif request == 'FORWARD':
                 run_motor(1, 0)
-
     finally:
         client_socket.close()
 
