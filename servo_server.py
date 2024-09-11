@@ -9,10 +9,10 @@ MAX_PULSE_WIDTH = 2500  # Microseconds
 debounce_delay = 0.6  # Debounce delay in seconds
 
 # Angle limits
-MIN_ANGLE_1 = 5
-MAX_ANGLE_1 = 35
+MIN_ANGLE_1 = 0
+MAX_ANGLE_1 = 180
 MIN_ANGLE_2 = 0
-MAX_ANGLE_2 = 25
+MAX_ANGLE_2 = 180
 
 # Setup GPIO using pigpio
 servo_pin_1 = 12

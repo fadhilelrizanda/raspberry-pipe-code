@@ -6,8 +6,8 @@ import time
 # Define pinout
 IN1 = 17
 IN2 = 27
-IN3 = 22
-IN4 = 16
+IN3 = 25
+IN4 = 26
 
 # Set GPIO mode
 GPIO.setmode(GPIO.BCM)
